@@ -1,12 +1,25 @@
 package main
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
 	"net/http"
 	"os"
+	"time"
 )
+
+type Payload struct {
+	PodName   string `json:"pod_name"`
+	Timestamp string `json:"timestamp"`
+}
+
+/*func generatePayload() *Payload {
+	p := Payload{}
+	p.pod_name = "test"
+	p.timestamp = "test2"
+	return &p
+}*/
 
 func getEnv(key, fallback string) string {
 	if value, ok := os.LookupEnv(key); ok {
@@ -17,7 +30,19 @@ func getEnv(key, fallback string) string {
 
 func getRoot(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("got / request\n")
-	io.WriteString(w, "This is my website!\n")
+	hostname, _ := os.Hostname() // sloppy but ignoring error
+
+	//payload := &Payload
+	payload := Payload{PodName: hostname, Timestamp: time.Now().UTC().String()}
+	//p, _ := json.Marshal(&generatePayload())
+	w.Header().Set("Content-Type", "application/json")
+	/*p, err := json.Marshal(Payload{PodName: "test", Timestamp: "test2"})
+	if err != nil {
+		fmt.Printf("Error: %s", err)
+		return
+	}
+	io.WriteString(w, string(p))*/
+	json.NewEncoder(w).Encode(payload)
 }
 
 func main() {
