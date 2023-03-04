@@ -12,6 +12,7 @@ import (
 type Payload struct {
 	PodName   string `json:"pod_name"`
 	Timestamp string `json:"timestamp"`
+	TestValue string `json:"test_value,omitempty"`
 }
 
 /*func generatePayload() *Payload {
