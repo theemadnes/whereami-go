@@ -24,6 +24,7 @@ type Payload struct {
 }
 
 // pick a random value from a map (used for emoji assignment)
+// using https://programming-idioms.org/idiom/250/pick-a-random-value-from-a-map/4435/go
 func pick(m map[string]string) string {
 	k := rand.Intn(len(m))
 	for _, x := range m {
