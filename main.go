@@ -72,12 +72,8 @@ func getEnv(key, fallback string) string {
 
 func getRoot(w http.ResponseWriter, r *http.Request) {
 	log.Printf("got / request\n")
-	//hostname, _ := os.Hostname() // sloppy but ignoring error
-	//projectId := getEnv()
 
-	//payload := &Payload
-	//payload := Payload{PodName: hostname, Timestamp: time.Now().UTC().String()}
-	payload = generatePayload()
+	// update timestamp
 	payload.Timestamp = time.Now().UTC().String()
 	//p, _ := json.Marshal(&generatePayload())
 	w.Header().Set("Content-Type", "application/json")
@@ -91,7 +87,8 @@ func getRoot(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-
+	// initialize payload
+	payload = generatePayload()
 	http.HandleFunc("/", getRoot)
 
 	err := http.ListenAndServe(":"+getEnv("PORT", "8080"), nil)
