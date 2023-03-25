@@ -23,6 +23,9 @@ type Payload struct {
 	PodNameEmoji   string `json:"pod_name_emoji"`
 }
 
+// laziness and creating a global payload
+var payload Payload
+
 // pick a random value from a map (used for emoji assignment)
 // using https://programming-idioms.org/idiom/250/pick-a-random-value-from-a-map/4435/go
 func pick(m map[string]string) string {
@@ -58,9 +61,6 @@ func generatePayload() Payload {
 	}
 	return payload
 }
-
-// laziness and creating a global payload
-var payload Payload
 
 func getEnv(key, fallback string) string {
 	if value, ok := os.LookupEnv(key); ok {
