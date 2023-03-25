@@ -20,7 +20,7 @@ type Payload struct {
 	ProjectId      string `json:"project_id,omitempty"`
 	InstanceId     string `json:"gce_instance_id,omitempty"`
 	ServiceAccount string `json:"gce_service_account,omitempty"`
-	PodNameEmoji   string `json:"pod_name_emoji,omitempty"`
+	PodNameEmoji   string `json:"pod_name_emoji"`
 }
 
 // pick a random value from a map (used for emoji assignment)
