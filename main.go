@@ -28,6 +28,20 @@ type Payload struct {
 // laziness and creating a global payload
 var payload Payload
 
+// headers to propagate
+var headersToPropagate = []string{
+	"x-request-id",
+	"x-b3-traceid",
+	"x-b3-spanid",
+	"x-b3-parentspanid",
+	"x-b3-sampled",
+	"x-b3-flags",
+	"x-ot-span-context",
+	"x-cloud-trace-context",
+	"traceparent",
+	"grpc-trace-bin",
+}
+
 // pick a random value from a map (used for emoji assignment)
 // using https://programming-idioms.org/idiom/250/pick-a-random-value-from-a-map/4435/go
 func pick(m map[string]string) string {
@@ -73,6 +87,16 @@ func getEnv(key, fallback string) string {
 	return fallback
 }
 
+func contains(s []string, str string) bool {
+	for _, v := range s {
+		if v == str {
+			return true
+		}
+	}
+
+	return false
+}
+
 func getRoot(w http.ResponseWriter, r *http.Request) {
 	log.Printf("got / request\n")
 
@@ -82,7 +106,26 @@ func getRoot(w http.ResponseWriter, r *http.Request) {
 	// check for backend service call
 	if getEnv("BACKEND_ENABLED", "") == "True" {
 		if backendUrl, ok := os.LookupEnv("BACKEND_SERVICE"); ok {
-			resp, err := http.Get(backendUrl)
+			client := &http.Client{}
+			req, err := http.NewRequest("GET", backendUrl, nil)
+			if err != nil {
+				log.Panicf("Error creating request object to %s\n", backendUrl)
+			}
+			// populate headers to request
+			/*for _, k := range headersToPropagate {
+				if r.Header.Values(k) {
+					req.Header.Add(k, v)
+				}
+			}*/
+			for k, v := range r.Header {
+				if contains(headersToPropagate, k) {
+					//req.Header.Add(k, r.Header.Values(k))
+					for _, vOther := range v {
+						req.Header.Add(k, vOther)
+					}
+				}
+			}
+			resp, err := client.Do(req)
 			if err != nil {
 				log.Printf("Call to %s failed", backendUrl)
 				defer resp.Body.Close()
