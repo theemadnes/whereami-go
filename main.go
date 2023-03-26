@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"errors"
+	"io"
 	"log"
 	"math/rand"
 	"net/http"
@@ -14,13 +15,14 @@ import (
 )
 
 type Payload struct {
-	PodName        string `json:"pod_name"`
-	Timestamp      string `json:"timestamp"`
-	Zone           string `json:"zone,omitempty"`
-	ProjectId      string `json:"project_id,omitempty"`
-	InstanceId     string `json:"gce_instance_id,omitempty"`
-	ServiceAccount string `json:"gce_service_account,omitempty"`
-	PodNameEmoji   string `json:"pod_name_emoji"`
+	PodName        string                 `json:"pod_name"`
+	Timestamp      string                 `json:"timestamp"`
+	Zone           string                 `json:"zone,omitempty"`
+	ProjectId      string                 `json:"project_id,omitempty"`
+	InstanceId     string                 `json:"gce_instance_id,omitempty"`
+	ServiceAccount string                 `json:"gce_service_account,omitempty"`
+	PodNameEmoji   string                 `json:"pod_name_emoji"`
+	BackendResult  map[string]interface{} `json:"backend_result,omitempty"`
 }
 
 // laziness and creating a global payload
@@ -76,6 +78,35 @@ func getRoot(w http.ResponseWriter, r *http.Request) {
 
 	// update timestamp
 	payload.Timestamp = time.Now().UTC().String()
+
+	// check for backend service call
+	if getEnv("BACKEND_ENABLED", "") == "True" {
+		if backendUrl, ok := os.LookupEnv("BACKEND_SERVICE"); ok {
+			resp, err := http.Get(backendUrl)
+			if err != nil {
+				log.Printf("Call to %s failed", backendUrl)
+				defer resp.Body.Close()
+			} else {
+				defer resp.Body.Close()
+				body, err := io.ReadAll(resp.Body)
+				if err != nil {
+					log.Printf("Invalid response from %s", backendUrl)
+				} else {
+					var jsonRes map[string]interface{}
+					err = json.Unmarshal(body, &jsonRes)
+					if err != nil {
+						log.Printf("Unable to unmarshal response from %s", backendUrl)
+					} else {
+						payload.BackendResult = jsonRes
+					}
+					//payload.BackendResult = jsonRes.Marshal()
+					//marRes, _ := json.Marshal(jsonRes)
+					//log.Println(string(marRes))
+
+				}
+			}
+		}
+	}
 	//p, _ := json.Marshal(&generatePayload())
 	w.Header().Set("Content-Type", "application/json")
 	/*p, err := json.Marshal(Payload{PodName: "test", Timestamp: "test2"})
