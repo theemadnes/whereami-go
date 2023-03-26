@@ -3,6 +3,8 @@ package main
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
+	"html"
 	"io"
 	"log"
 	"math/rand"
@@ -162,8 +164,12 @@ func getRoot(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	// initialize payload
+	// initialize payload and hack to wait for WI to come online
+	time.Sleep(5 * time.Second)
 	payload = generatePayload()
+	http.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, "Hello, %q", html.EscapeString(r.URL.Path))
+	})
 	http.HandleFunc("/", getRoot)
 
 	err := http.ListenAndServe(":"+getEnv("PORT", "8080"), nil)
