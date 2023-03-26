@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"html"
 	"io"
-	"log"
 	"math/rand"
 	"net/http"
 	"os"
@@ -67,9 +66,9 @@ func generatePayload() Payload {
 
 	//projectId, gceErr := gceMetadataClient.ProjectID()
 	projectId, gceErr := metadata.ProjectID()
-	//log.Printf(projectId + "\n")
+	//fmt.Printf(projectId + "\n")
 	if gceErr != nil {
-		log.Println("Unable to capture GCE metadata")
+		fmt.Println("Unable to capture GCE metadata")
 
 	} else {
 		payload.ProjectId = projectId
@@ -85,7 +84,7 @@ func getEnv(key, fallback string) string {
 		return value
 	}
 	// else condition
-	log.Printf("Environment variable %s not found\n", key)
+	fmt.Printf("Environment variable %s not found\n", key)
 	return fallback
 }
 
@@ -100,7 +99,7 @@ func contains(s []string, str string) bool {
 }
 
 func getRoot(w http.ResponseWriter, r *http.Request) {
-	log.Printf("got / request\n")
+	fmt.Printf("got / request\n")
 
 	// update timestamp
 	payload.Timestamp = time.Now().UTC().String()
@@ -111,7 +110,7 @@ func getRoot(w http.ResponseWriter, r *http.Request) {
 			client := &http.Client{}
 			req, err := http.NewRequest("GET", backendUrl, nil)
 			if err != nil {
-				log.Panicf("Error creating request object to %s\n", backendUrl)
+				panic(err)
 			}
 			// populate headers to request
 			/*for _, k := range headersToPropagate {
@@ -129,24 +128,24 @@ func getRoot(w http.ResponseWriter, r *http.Request) {
 			}
 			resp, err := client.Do(req)
 			if err != nil {
-				log.Printf("Call to %s failed", backendUrl)
+				fmt.Printf("Call to %s failed", backendUrl)
 				defer resp.Body.Close()
 			} else {
 				defer resp.Body.Close()
 				body, err := io.ReadAll(resp.Body)
 				if err != nil {
-					log.Printf("Invalid response from %s", backendUrl)
+					fmt.Printf("Invalid response from %s", backendUrl)
 				} else {
 					var jsonRes map[string]interface{}
 					err = json.Unmarshal(body, &jsonRes)
 					if err != nil {
-						log.Printf("Unable to unmarshal response from %s", backendUrl)
+						fmt.Printf("Unable to unmarshal response from %s", backendUrl)
 					} else {
 						payload.BackendResult = jsonRes
 					}
 					//payload.BackendResult = jsonRes.Marshal()
 					//marRes, _ := json.Marshal(jsonRes)
-					//log.Println(string(marRes))
+					//fmt.Println(string(marRes))
 
 				}
 			}
@@ -175,9 +174,9 @@ func main() {
 	err := http.ListenAndServe(":"+getEnv("PORT", "8080"), nil)
 
 	if errors.Is(err, http.ErrServerClosed) {
-		log.Printf("server closed\n")
+		fmt.Printf("server closed\n")
 	} else if err != nil {
-		log.Printf("error starting server: %s\n", err)
+		fmt.Printf("error starting server: %s\n", err)
 		os.Exit(1)
 	}
 }
