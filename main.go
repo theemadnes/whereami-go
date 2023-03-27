@@ -20,6 +20,7 @@ type Payload struct {
 	ClusterName       string                 `json:"cluster_name,omitempty"`
 	InstanceId        string                 `json:"gce_instance_id,omitempty"`
 	ServiceAccount    string                 `json:"gce_service_account,omitempty"`
+	Headers           map[string][]string    `json:"headers,omitempty"`
 	HostHeader        string                 `json:"host_header,omitempty"`
 	Metadata          string                 `json:"metadata,omitempty"`
 	NodeName          string                 `json:"node_name,omitempty"`
@@ -133,6 +134,11 @@ func getRoot(w http.ResponseWriter, r *http.Request) {
 
 	// get host header
 	payload.HostHeader = r.Host
+
+	// should we echo back incoming headers?
+	if getEnv("ECHO_HEADERS", "") == "True" {
+		payload.Headers = r.Header
+	}
 
 	// check for backend service call
 	if getEnv("BACKEND_ENABLED", "") == "True" {
