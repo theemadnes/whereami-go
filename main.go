@@ -25,6 +25,7 @@ type Payload struct {
 	ServiceAccount string                 `json:"gce_service_account,omitempty"`
 	PodNameEmoji   string                 `json:"pod_name_emoji"`
 	BackendResult  map[string]interface{} `json:"backend_result,omitempty"`
+	ClusterName    string                 `json:"cluster_name,omitempty"`
 }
 
 // laziness and creating a global payload
@@ -76,6 +77,7 @@ func generatePayload() Payload {
 		payload.Zone, _ = metadata.Zone()
 		payload.InstanceId, _ = metadata.InstanceID()
 		payload.ServiceAccount, _ = metadata.InstanceAttributeValue("serviceAccounts/default/email") // doesn't work for now
+		payload.ClusterName, _ = metadata.InstanceAttributeValue("cluster-name")
 	}
 	return payload
 }
