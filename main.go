@@ -9,6 +9,7 @@ import (
 	"math/rand"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/compute/metadata"
@@ -90,7 +91,8 @@ func getEnv(key, fallback string) string {
 
 func contains(s []string, str string) bool {
 	for _, v := range s {
-		if v == str {
+		// using EqualFold to make string comparison case-insensitive
+		if strings.EqualFold(v, str) {
 			return true
 		}
 	}
@@ -119,10 +121,13 @@ func getRoot(w http.ResponseWriter, r *http.Request) {
 				}
 			}*/
 			for k, v := range r.Header {
+				//fmt.Printf("checking %s %s\n", k, v)
+				//fmt.Printf("test\n")
 				if contains(headersToPropagate, k) {
 					//req.Header.Add(k, r.Header.Values(k))
 					for _, vOther := range v {
 						req.Header.Add(k, vOther)
+						//fmt.Printf("%s %s\n", k, vOther)
 					}
 				}
 			}
