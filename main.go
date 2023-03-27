@@ -17,15 +17,21 @@ import (
 )
 
 type Payload struct {
-	PodName        string                 `json:"pod_name"`
-	Timestamp      string                 `json:"timestamp"`
-	Zone           string                 `json:"zone,omitempty"`
-	ProjectId      string                 `json:"project_id,omitempty"`
-	InstanceId     string                 `json:"gce_instance_id,omitempty"`
-	ServiceAccount string                 `json:"gce_service_account,omitempty"`
-	PodNameEmoji   string                 `json:"pod_name_emoji"`
-	ClusterName    string                 `json:"cluster_name,omitempty"`
-	BackendResult  map[string]interface{} `json:"backend_result,omitempty"`
+	ClusterName       string                 `json:"cluster_name,omitempty"`
+	InstanceId        string                 `json:"gce_instance_id,omitempty"`
+	ServiceAccount    string                 `json:"gce_service_account,omitempty"`
+	HostHeader        string                 `json:"host_header,omitempty"`
+	Metadata          string                 `json:"metadata,omitempty"`
+	NodeName          string                 `json:"node_name,omitempty"`
+	PodIp             string                 `json:"pod_ip,omitempty"`
+	PodName           string                 `json:"pod_name"`
+	PodNameEmoji      string                 `json:"pod_name_emoji"`
+	PodNamespace      string                 `json:"pod_namespace,omitempty"`
+	PodServiceAccount string                 `json:"pod_service_account,omitempty"`
+	ProjectId         string                 `json:"project_id,omitempty"`
+	Timestamp         string                 `json:"timestamp"`
+	Zone              string                 `json:"zone,omitempty"`
+	BackendResult     map[string]interface{} `json:"backend_result,omitempty"`
 }
 
 // laziness and creating a global payload
@@ -79,6 +85,23 @@ func generatePayload() Payload {
 		payload.ServiceAccount, _ = metadata.Email("default")
 		payload.ClusterName, _ = metadata.InstanceAttributeValue("cluster-name")
 	}
+	// deal with K8s downward API stuff
+	if len(getEnv("NODE_NAME", "")) > 0 {
+		payload.NodeName = getEnv("NODE_NAME", "")
+	}
+	if len(getEnv("POD_NAMESPACE", "")) > 0 {
+		payload.PodNamespace = getEnv("POD_NAMESPACE", "")
+	}
+	if len(getEnv("POD_IP", "")) > 0 {
+		payload.PodIp = getEnv("POD_IP", "")
+	}
+	if len(getEnv("POD_SERVICE_ACCOUNT", "")) > 0 {
+		payload.PodServiceAccount = getEnv("POD_SERVICE_ACCOUNT", "")
+	}
+	if len(getEnv("METADATA", "")) > 0 {
+		payload.Metadata = getEnv("METADATA", "")
+	}
+
 	return payload
 }
 
@@ -107,6 +130,9 @@ func getRoot(w http.ResponseWriter, r *http.Request) {
 
 	// update timestamp
 	payload.Timestamp = time.Now().UTC().String()
+
+	// get host header
+	payload.HostHeader = r.Host
 
 	// check for backend service call
 	if getEnv("BACKEND_ENABLED", "") == "True" {
