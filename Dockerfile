@@ -18,7 +18,6 @@
 # Use the offical golang image to create a binary.
 # This is based on Debian and sets the GOPATH to /go.
 # https://hub.docker.com/_/golang
-#FROM golang:1.19 as builder
 FROM cgr.dev/chainguard/go:latest as builder
 
 # Create and change to the app directory.
