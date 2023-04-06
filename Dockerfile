@@ -44,7 +44,6 @@ RUN CGO_ENABLED=0 go build -v -o server
 #RUN set -x && apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
 #    ca-certificates && \
 #    rm -rf /var/lib/apt/lists/*
-#FROM gcr.io/distroless/base-debian11
 FROM cgr.dev/chainguard/static:latest
 
 # Copy the binary to the production image from the builder stage.
