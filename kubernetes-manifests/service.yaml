@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: whereami
+  name: whereami
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 8080
+    name: http # adding for Istio
+  selector:
+    app: whereami
+  type: LoadBalancer

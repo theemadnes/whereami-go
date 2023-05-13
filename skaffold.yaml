@@ -1,0 +1,17 @@
+apiVersion: skaffold/v4beta4
+kind: Config
+metadata:
+  name: whereami-go
+build:
+  artifacts:
+    - image: us-central1-docker.pkg.dev/cicd-system-demo-01/whereami-go/whereami
+      docker:
+        dockerfile: Dockerfile
+  tagPolicy:
+    sha256: {}
+manifests:
+  rawYaml:
+    - kubernetes-manifests/configmap.yaml
+    - kubernetes-manifests/deployment.yaml
+    - kubernetes-manifests/ksa.yaml
+    - kubernetes-manifests/service.yaml
