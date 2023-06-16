@@ -31,6 +31,13 @@ spec:
           privileged: false
           readOnlyRootFilesystem: true
         image: us-central1-docker.pkg.dev/cicd-system-demo-01/whereami-go/whereami
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "250m"
         ports:
           - name: http
             containerPort: 8080
@@ -39,15 +46,15 @@ spec:
               path: /healthz
               port: 8080
               scheme: HTTP
-          initialDelaySeconds: 5
-          periodSeconds: 15
-          timeoutSeconds: 5
+          initialDelaySeconds: 20
+          periodSeconds: 10
+          timeoutSeconds: 2
         readinessProbe:
           httpGet:
             path: /healthz
             port: 8080
             scheme: HTTP
-          initialDelaySeconds: 5
+          initialDelaySeconds: 10
           timeoutSeconds: 1
         env:
           - name: NODE_NAME

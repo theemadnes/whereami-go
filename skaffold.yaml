@@ -11,6 +11,10 @@ build:
     sha256: {}
     #gitCommit:
     #  ignoreChanges: false
+deploy:
+  tolerateFailuresUntilDeadline: true
+  #statusCheck: true
+  #statusCheckDeadlineSeconds: 300
 manifests:
   rawYaml:
     - kubernetes-manifests/configmap.yaml
