@@ -8,9 +8,9 @@ build:
       docker:
         dockerfile: Dockerfile
   tagPolicy:
-    #sha256: {}
-    gitCommit:
-      ignoreChanges: false
+    sha256: {}
+    #gitCommit:
+    #  ignoreChanges: false
 manifests:
   rawYaml:
     - kubernetes-manifests/configmap.yaml
