@@ -11,8 +11,8 @@ build:
     sha256: {}
     #gitCommit:
     #  ignoreChanges: false
-deploy:
-  tolerateFailuresUntilDeadline: true
+#deploy:
+  #tolerateFailuresUntilDeadline: true
   #statusCheck: true
   #statusCheckDeadlineSeconds: 300
 manifests:
