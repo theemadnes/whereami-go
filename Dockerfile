@@ -29,8 +29,6 @@ WORKDIR /app
 COPY go.* ./
 RUN go mod download
 
-# test comment
-
 # Copy local code to the container image.
 COPY . ./
 
