@@ -1,15 +1,23 @@
- - deployment/whereami: no nodes available to schedule pods
-    - pod/whereami-76666d4df9-5tnzs: no nodes available to schedule pods
-    - pod/whereami-76666d4df9-frkpq: no nodes available to schedule pods
-    - pod/whereami-76666d4df9-tdc6q: no nodes available to schedule pods
- - deployment/whereami: creating container whereami
-    - pod/whereami-76666d4df9-frkpq: creating container whereami
- - deployment/whereami: creating container whereami
-    - pod/whereami-76666d4df9-frkpq: creating container whereami
- - deployment/whereami: creating container whereami
-    - pod/whereami-76666d4df9-frkpq: creating container whereami
- - deployment/whereami: waiting for rollout to finish: 2 of 3 updated replicas are available...
- - deployment/whereami: successfully rolled out
+# testing out Binary Auth for `whereami-go`
 
+```
+# using https://cloud.google.com/binary-authorization/docs/cloud-build
 
- - pod/whereami-6758d85b69-vpmt9: 0/2 nodes are available: 1 Insufficient cpu, 1 node(s) had untolerated taint {ToBeDeletedByClusterAutoscaler: 1687287484}. preemption: 0/2 nodes are available: 1 No preemption victims found for incoming pod, 1 Preemption is not helpful for scheduling..
+PROJECT_ID=cicd-system-demo-01
+
+#gcloud config set project ${PROJECT_ID}
+
+PROJECT_NUMBER=$(gcloud projects list --filter="${PROJECT_ID}" --format="value(PROJECT_NUMBER)")
+
+gcloud projects add-iam-policy-binding ${PROJECT_ID} \
+  --member serviceAccount:${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com \
+  --role roles/binaryauthorization.attestorsViewer
+
+gcloud projects add-iam-policy-binding ${PROJECT_ID} \
+  --member serviceAccount:${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com \
+  --role roles/cloudkms.signerVerifier
+
+gcloud projects add-iam-policy-binding ${PROJECT_ID} \
+  --member serviceAccount:${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com \
+  --role roles/containeranalysis.notes.attacher
+```
