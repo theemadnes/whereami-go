@@ -1,0 +1,29 @@
+apiVersion: deploy.cloud.google.com/v1
+kind: DeliveryPipeline
+metadata:
+  name: whereami-go-01
+description: main application pipeline
+serialPipeline:
+  stages:
+  - targetId: cluster-dev-01
+    profiles: []
+  - targetId: cluster-prod-01
+    profiles: []
+---
+
+apiVersion: deploy.cloud.google.com/v1
+kind: Target
+metadata:
+  name: cluster-dev-01
+description: development cluster
+gke:
+  cluster: projects/cicd-system-demo-01/locations/us-central1/clusters/cluster-dev-01
+---
+
+apiVersion: deploy.cloud.google.com/v1
+kind: Target
+metadata:
+  name: cluster-prod-01
+description: production cluster
+gke:
+  cluster: projects/cicd-system-demo-01/locations/us-central1/clusters/cluster-prod-01
