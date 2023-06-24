@@ -33,10 +33,10 @@ spec:
         image: us-central1-docker.pkg.dev/cicd-system-demo-01/whereami-go/whereami
         resources:
           requests:
-            memory: "512Mi"
+            memory: "0.5Gi"
             cpu: "250m"
           limits:
-            memory: "512Mi"
+            memory: "0.5Gi"
             cpu: "250m"
         ports:
           - name: http
