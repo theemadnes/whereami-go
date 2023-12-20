@@ -1,5 +1,5 @@
 # whereami-go
-Golang port of https://github.com/GoogleCloudPlatform/kubernetes-engine-samples/tree/main/whereami
+Golang port of https://github.com/GoogleCloudPlatform/kubernetes-engine-samples/tree/main/quickstarts/whereami
 
 what `whereami-go` doesn't do that the original `whereami` does:
 - gRPC (i.e. `whereami-go` is HTTP only)
